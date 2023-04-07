@@ -14,7 +14,7 @@ from data.dataloader import load_data
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu', default="0", type=str)
-    parser.add_argument('--dataset', default='CIFAR10', type=str)
+    # parser.add_argument('--dataset', default='CIFAR10', type=str)
     parser.add_argument('--bsize', default=1024, type=int,
                         help='batch size for previous images')
     parser.add_argument('--estimator', default="mle", type=str, choices=['mle','geomle','twonn', 'shortest-path'])
@@ -69,6 +69,8 @@ def parse_args():
                         help="0 for using all samples from the training set")
     parser.add_argument('--anchor-ratio', default=0, type=float,
                         help="0 for using all samples from the training set")
+    parser.add_argument('--class_ind', default=-1, type=int,
+                        help="If specified, only use this class index")
     parser.add_argument('--max_num_samples', default=-1, type=int,
                         help="Maximum number of samples to process." \
                              "Useful for evaluating convergence.")
@@ -110,10 +112,10 @@ def run_mle(args, dataset):
         dim, inv_mle_dim = estimators.mle_inverse_singlek(dataset, k1=args.k1, args=args)
     else:
         if args.average_inverse:
-            indiv_est = mle(dataset, net, nb_iter=args.nb_iter, random_state=None, k1=args.k1, k2=args.k2, average=True, args=args)[0]
+            indiv_est = estimators.mle(dataset, nb_iter=args.nb_iter, random_state=None, k1=args.k1, k2=args.k2, average=True, args=args)[0]
             dim = 1. / np.mean(1. / indiv_est)
         else:
-            dim = mle(dataset, net, nb_iter=args.nb_iter, random_state=None, k1=args.k1, k2=args.k2, average=True, args=args)[0].mean()
+            dim = estimators.mle(dataset, nb_iter=args.nb_iter, random_state=None, k1=args.k1, k2=args.k2, average=True, args=args)[0].mean()
         inv_mle_dim = None
 
     #Log and save results

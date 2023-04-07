@@ -20,8 +20,8 @@ from scipy.sparse import csr_matrix
 from scipy.spatial import distance
 from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
 # ppope: MODIFED TO USE FASTER VERSION OF SHORTEST PATH
-# from sklearn.utils.graph import graph_shortest_path
-from gsp.graph_shortest_path import graph_shortest_path
+from scipy.sparse.csgraph import shortest_path as graph_shortest_path
+# from gsp.graph_shortest_path import graph_shortest_path
 
 import torch
 from torchvision import transforms
@@ -96,7 +96,7 @@ def shortest_path(dataset, args):
     else:
         radius = knn_dists_full.max()
 
-    C = graph_shortest_path(knn_dists_full, directed=False, first_n=first_n)
+    C, predecessors = graph_shortest_path(knn_dists_full, directed=False, first_n=first_n)
     C = np.asmatrix(C, dtype=np.float32)
     connect = np.zeros(C.shape[0])
     conn = np.zeros(C.shape[0])

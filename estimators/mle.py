@@ -51,6 +51,7 @@ def intrinsic_dim_sample_wise(k=5, dist=None):
     dist = dist[:, 1:(k + 1)]
     if not np.all(dist > 0):
         raise Exception("Identical samples detected!")
+    # print("dist", dist.shape, dist.min(), dist.max())
     d = np.log(dist[:, k - 1: k] / dist[:, 0:k - 1])
     d = d.sum(axis=1) / (k - 2)
     d = 1. / d
@@ -121,6 +122,7 @@ def mle(full_dataset, nb_iter=100, random_state=None, k1=10, k2=20, average=Fals
                                                    batch_size=args.bsize, shuffle=False,
                                                    num_workers=args.n_workers)
 
+    update_nn(anchor_loader, 0, bootstrap_loader, 0, nn_computer)
     dist = nn_computer.min_dists.cpu().numpy()
 
     Rs = []
